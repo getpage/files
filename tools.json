@@ -1,0 +1,44 @@
+[
+    {
+    "id": "lyrix",
+    "name": "[LYRIX]",
+    "description": "Edit lyrics or subtitles file",
+    "url": "lyrix.html",
+    "categories": ["TTML","SRC", "LRC","DK"]
+  },
+  {
+    "id": "image-studio",
+    "name": "[IMAGE_STUDIO]",
+    "description": "Crop, resize, compress, & convert raster images.",
+    "url": "https://your-custom-site.com/image-editor",
+    "categories": ["image", "png", "jpg", "jpeg", "webp", "gif"]
+  },
+  {
+    "id": "code-ide",
+    "name": "[CODE_IDE]",
+    "description": "Monaco-based editor for JSON, JS, HTML, CSS, and code files.",
+    "url": "https://your-custom-site.com/code-editor",
+    "categories": ["text", "code", "json", "js", "html", "css", "py", "cpp"]
+  },
+  {
+    "id": "pdf-suite",
+    "name": "[PDF_OPERATOR]",
+    "description": "Merge, split, compress, and annotate PDF documents.",
+    "url": "https://your-custom-site.com/pdf-suite",
+    "categories": ["pdf", "application/pdf"]
+  },
+  {
+    "id": "audio-lab",
+    "name": "[AUDIO_LAB]",
+    "description": "Trim, adjust bitrate, and add audio effects.",
+    "url": "https://your-custom-site.com/audio-editor",
+    "categories": ["audio", "mp3", "wav", "ogg"]
+  },
+  {
+    "id": "hex-inspector",
+    "name": "[HEX_INSPECTOR]",
+    "description": "Low-level raw binary inspector and hex editor for any file.",
+    "url": "https://your-custom-site.com/hex-editor",
+    "categories": ["all"]
+  }
+]
