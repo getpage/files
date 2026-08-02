@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>[SYS_FILE_OPERATOR v3.2]</title>
+  <title>[SYS_FILE_OPERATOR v3.3]</title>
   <style>
     :root {
       /* Ultra Dark OLED Cyberpunk Palette */
@@ -190,7 +190,7 @@
 
   <header>
     <h1>> TERMINAL_FILE_OPERATOR.EXE</h1>
-    <div class="subtitle">[SYS_STATUS: ONLINE] // Pitch Dark Mode // Auto-fetching Full Forms</div>
+    <div class="subtitle">[SYS_STATUS: ONLINE] // Same Tab Redirect Enabled</div>
   </header>
 
   <div class="grid">
@@ -269,7 +269,7 @@
         const card = document.createElement('a');
         card.className = 'tool-card';
         card.href = tool.url;
-        card.target = '_blank';
+        card.target = '_self'; // Opens link in the SAME tab
 
         const isMatch = tool.categories.includes('all') ||
                         tool.categories.some(cat => activeMime.includes(cat) || activeExt === cat);
