@@ -14,9 +14,9 @@
   <style id="theme-base-styles">
     :root, [data-theme="light"] {
       /* MD3 Color Tokens */
-      --md-sys-color-primary: #6750A4;
+      --md-sys-color-primary: #8C62FF;
       --md-sys-color-secondary: #FFFFFF;
-      --md-sys-color-primary-container: rgba(103, 80, 164, 0.15);
+      --md-sys-color-primary-container: rgba(140, 98, 255, 0.15);
       
       --md-sys-color-surface: #FBF8FD;
       --md-sys-color-surface-container: #F3EDF7;
@@ -645,7 +645,6 @@
       color: var(--md-sys-color-on-surface);
     }
 
-    /* Cleaned Up Customizer Modal Sliders */
     .modal-slider {
       -webkit-appearance: none;
       appearance: none;
@@ -915,12 +914,12 @@
       <div>
         <div class="section-label">PRIMARY COLOR</div>
         <div class="color-palette-row" id="primary-palette">
-          <div class="theme-swatch selected" style="background: #6750A4;" data-primary="#6750A4"></div>
+          <div class="theme-swatch selected" style="background: #8C62FF;" data-primary="#8C62FF"></div>
+          <div class="theme-swatch" style="background: #6750A4;" data-primary="#6750A4"></div>
           <div class="theme-swatch" style="background: #F1B800;" data-primary="#F1B800"></div>
           <div class="theme-swatch" style="background: #007A8C;" data-primary="#007A8C"></div>
           <div class="theme-swatch" style="background: #A03D5D;" data-primary="#A03D5D"></div>
           <div class="theme-swatch" style="background: #3F7538;" data-primary="#3F7538"></div>
-          <div class="theme-swatch" style="background: #965300;" data-primary="#965300"></div>
           <div class="theme-swatch custom-picker-wrapper" title="Pick Custom Primary">
             <span class="material-symbols-rounded" style="font-size: 18px; color: var(--md-sys-color-on-surface-variant);">colorize</span>
             <input type="color" id="primary-custom-picker" value="#8C62FF">
@@ -934,9 +933,9 @@
       <div>
         <div class="section-label">SECONDARY COLOR</div>
         <div class="color-palette-row" id="secondary-palette">
-          <div class="theme-swatch" style="background: #FFFFFF;" data-secondary="#FFFFFF" title="White"></div>
+          <div class="theme-swatch selected" style="background: #FFFFFF;" data-secondary="#FFFFFF" title="White"></div>
           <div class="theme-swatch" style="background: #000000;" data-secondary="#000000" title="Black"></div>
-          <div class="theme-swatch selected" id="swatch-primary-darker" title="Primary Darker"></div>
+          <div class="theme-swatch" id="swatch-primary-darker" title="Primary Darker"></div>
           <div class="theme-swatch" id="swatch-primary-lighter" title="Primary Lighter"></div>
           <div class="theme-swatch custom-picker-wrapper" title="Pick Custom Secondary">
             <span class="material-symbols-rounded" style="font-size: 18px; color: var(--md-sys-color-on-surface-variant);">colorize</span>
@@ -962,9 +961,9 @@
         <div class="slider-row">
           <div class="slider-header">
             <span>Glass Backdrop Blur</span>
-            <span id="blur-val">32px</span>
+            <span id="blur-val">16px</span>
           </div>
-          <input type="range" id="blur-slider" class="modal-slider" min="0" max="40" value="32">
+          <input type="range" id="blur-slider" class="modal-slider" min="0" max="40" value="16">
         </div>
       </div>
 
@@ -1009,11 +1008,6 @@
         lighterSwatch.style.background = lighterHex;
         lighterSwatch.setAttribute('data-secondary', lighterHex);
       }
-
-      setSecondaryTheme(darkerHex);
-
-      document.querySelectorAll('#secondary-palette .theme-swatch').forEach(s => s.classList.remove('selected'));
-      if (darkerSwatch) darkerSwatch.classList.add('selected');
     }
 
     function setPrimaryTheme(primaryHex) {
@@ -1073,8 +1067,8 @@
           }
         } catch(e) {}
       } else {
-        const defaultPrimary = getComputedStyle(document.documentElement).getPropertyValue('--md-sys-color-primary').trim() || '#8C62FF';
-        updateSecondaryPalette(defaultPrimary);
+        setPrimaryTheme('#8C62FF');
+        setSecondaryTheme('#FFFFFF');
       }
     }
 
