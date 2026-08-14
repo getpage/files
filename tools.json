@@ -1,44 +1,66 @@
+
 [
-    {
+  {
     "id": "lyrix",
-    "name": "[LYRIX]",
-    "description": "Edit lyrics or subtitles file",
+    "name": "Lyrix",
+    "category": "lyrics",
+    "exts": ["lrc", "srt", "vtt", "txt"],
+    "type": "Internal",
     "url": "lyrix.html",
-    "categories": ["TTML","SRC", "LRC","DK"]
+    "desc": "Optimize and convert images directly in browser."
   },
   {
-    "id": "image-studio",
-    "name": "[IMAGE_STUDIO]",
-    "description": "Crop, resize, compress, & convert raster images.",
-    "url": "https://your-custom-site.com/image-editor",
-    "categories": ["image", "png", "jpg", "jpeg", "webp", "gif"]
+    "id": "img-conv",
+    "name": "Squoosh Image Compressor",
+    "category": "image",
+    "exts": ["png", "jpg", "jpeg", "webp"],
+    "type": "External",
+    "url": "https://squoosh.app",
+    "desc": "Optimize and convert images directly in browser."
   },
   {
-    "id": "code-ide",
-    "name": "[CODE_IDE]",
-    "description": "Monaco-based editor for JSON, JS, HTML, CSS, and code files.",
-    "url": "https://your-custom-site.com/code-editor",
-    "categories": ["text", "code", "json", "js", "html", "css", "py", "cpp"]
+    "id": "img-bg",
+    "name": "Photopea Image Editor",
+    "category": "image",
+    "exts": ["psd", "png", "jpg", "svg"],
+    "type": "External",
+    "url": "https://www.photopea.com",
+    "desc": "Full-featured web-based graphics editor."
   },
   {
-    "id": "pdf-suite",
-    "name": "[PDF_OPERATOR]",
-    "description": "Merge, split, compress, and annotate PDF documents.",
-    "url": "https://your-custom-site.com/pdf-suite",
-    "categories": ["pdf", "application/pdf"]
+    "id": "pdf-merge",
+    "name": "ILovePDF Suite",
+    "category": "pdf",
+    "exts": ["pdf"],
+    "type": "External",
+    "url": "https://www.ilovepdf.com",
+    "desc": "Merge, split, compress, and convert PDF files."
   },
   {
-    "id": "audio-lab",
-    "name": "[AUDIO_LAB]",
-    "description": "Trim, adjust bitrate, and add audio effects.",
-    "url": "https://your-custom-site.com/audio-editor",
-    "categories": ["audio", "mp3", "wav", "ogg"]
+    "id": "audio-trim",
+    "name": "AudioTrimmer",
+    "category": "audio",
+    "exts": ["mp3", "wav", "ogg", "aac"],
+    "type": "External",
+    "url": "https://audiotrimmer.com",
+    "desc": "Simple online audio cutting and trimming."
   },
   {
-    "id": "hex-inspector",
-    "name": "[HEX_INSPECTOR]",
-    "description": "Low-level raw binary inspector and hex editor for any file.",
-    "url": "https://your-custom-site.com/hex-editor",
-    "categories": ["all"]
+    "id": "json-fmt",
+    "name": "JSON Formatter & Validator",
+    "category": "code",
+    "exts": ["json"],
+    "type": "External",
+    "url": "https://jsonformatter.curiousconcept.com",
+    "desc": "Format, parse, and clean up JSON strings."
+  },
+  {
+    "id": "code-diff",
+    "name": "Diffchecker Code Comparison",
+    "category": "code",
+    "exts": ["js", "html", "css", "txt", "py"],
+    "type": "External",
+    "url": "https://www.diffchecker.com",
+    "desc": "Compare file differences online easily."
   }
 ]

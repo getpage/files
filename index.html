@@ -3,431 +3,884 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>[SYS_FILE_OPERATOR v3.3]</title>
-  <style>
+  <title>Files</title>
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+
+  <!-- Core Theme Variables -->
+  <style id="dynamic-theme-vars">
     :root {
-      /* Ultra Dark OLED Cyberpunk Palette */
-      --bg: #020408;
-      --card-bg: #050a12;
-      --border: #0a192f;
-      --border-accent: #0d3251;
-      --text-main: #64ffda;
-      --text-muted: #495e77;
-      --accent: #00f0ff;
-      --accent-glow: rgba(0, 240, 255, 0.08);
-      --font-mono: 'Courier New', Courier, monospace;
+      --md-sys-color-primary: #6750A4;
+      --md-sys-color-secondary: #FFFFFF;
+      --md-sys-color-primary-container: rgba(103, 80, 164, 0.2);
+      --md-sys-color-on-primary-container: #E8DEF8;
+      --md-sys-color-surface: #141218;
+      --md-sys-color-surface-container: #211F26;
+      --md-sys-color-surface-container-high: #2B2930;
+      --md-sys-color-surface-container-highest: #36343B;
+      --md-sys-color-on-surface: #E6E1E5;
+      --md-sys-color-on-surface-variant: #CAC4D0;
+      --md-sys-color-outline: #938F99;
+      --md-sys-color-outline-variant: #49454F;
+      
+      --md-radius-xl: 28px;
+      --md-radius-lg: 20px;
+      --md-radius-md: 12px;
+      --md-radius-full: 9999px;
+
+      --md-shadow-sm: 0 2px 8px -2px rgba(0, 0, 0, 0.3);
+      --md-shadow-md: 0 12px 32px -4px rgba(0, 0, 0, 0.4);
+      --glass-blur: 16px;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: var(--font-mono);
-      border-radius: 0 !important; /* Strict sharp/squarish corners */
-    }
+    [data-theme="light"] {
+      --md-sys-color-primary: #6750A4;
+      --md-sys-color-secondary: #FFFFFF;
+      --md-sys-color-primary-container: #E8DEF8;
+      --md-sys-color-on-primary-container: #21005D;
+      --md-sys-color-surface: #FEF7FF;
+      --md-sys-color-surface-container: #F7F2FA;
+      --md-sys-color-surface-container-high: #F3EDF7;
+      --md-sys-color-surface-container-highest: #E6E0E9;
+      --md-sys-color-on-surface: #1D1B20;
+      --md-sys-color-on-surface-variant: #49454F;
+      --md-sys-color-outline: #79747E;
+      --md-sys-color-outline-variant: #CAC4D0;
 
+      --md-shadow-sm: 0 2px 8px -2px rgba(0, 0, 0, 0.05);
+      --md-shadow-md: 0 12px 32px -4px rgba(0, 0, 0, 0.08);
+    }
+  </style>
+
+  <style id="custom-theme-overrides"></style>
+
+  <!-- Prevent FOUC (Flash of Unstyled Content) on Load -->
+  <script>
+    (function applyThemeEarly() {
+      const savedTheme = localStorage.getItem('global_theme_mode') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+
+      const savedPrimary = localStorage.getItem('global_theme_primary') || '#6750A4';
+      const savedSecondary = localStorage.getItem('global_theme_secondary') || '#FFFFFF';
+      const savedRadius = localStorage.getItem('global_theme_radius') || '28px';
+      const savedBlur = localStorage.getItem('global_theme_blur') || '16px';
+
+      document.documentElement.style.setProperty('--md-sys-color-primary', savedPrimary);
+      document.documentElement.style.setProperty('--md-sys-color-primary-container', savedPrimary + '25');
+      document.documentElement.style.setProperty('--md-sys-color-secondary', savedSecondary);
+      document.documentElement.style.setProperty('--md-radius-xl', savedRadius);
+      document.documentElement.style.setProperty('--glass-blur', savedBlur);
+    })();
+  </script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
     body {
-      background-color: var(--bg);
-      color: var(--text-main);
-      padding: 24px;
-      line-height: 1.5;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--md-sys-color-surface);
+      color: var(--md-sys-color-on-surface);
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      overflow-x: hidden;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb {
+      background: var(--md-sys-color-outline-variant);
+      border-radius: var(--md-radius-full);
+    }
+    ::-webkit-scrollbar-thumb:hover { background: var(--md-sys-color-outline); }
+
+    /* Header */
     header {
-      border: 1px solid var(--border-accent);
-      padding: 16px;
-      background: var(--card-bg);
-      margin-bottom: 24px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+      background-color: var(--md-sys-color-surface-container);
+      backdrop-filter: blur(var(--glass-blur));
+      padding: 1rem 2rem;
+      display: flex; justify-content: space-between; align-items: center;
+      position: sticky; top: 0; z-index: 100;
+      border-bottom: 1px solid var(--md-sys-color-outline-variant);
+      transition: background-color 0.3s ease;
     }
 
-    h1 {
-      font-size: 1.1rem;
-      color: var(--accent);
-      text-transform: uppercase;
-      letter-spacing: 3px;
+    .brand { display: flex; align-items: center; gap: 0.85rem; font-weight: 800; font-size: 1.3rem; letter-spacing: -0.5px; }
+    .brand-icon {
+      width: 40px; height: 40px; border-radius: var(--md-radius-md);
+      background: var(--md-sys-color-primary); color: var(--md-sys-color-secondary);
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.3s ease, color 0.3s ease;
     }
 
-    .subtitle {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
+    .header-actions { display: flex; gap: 0.75rem; align-items: center; }
+    .container { max-width: 1080px; width: 100%; margin: 0 auto; padding: 2rem 1.5rem; flex: 1; display: flex; flex-direction: column; gap: 2rem; }
 
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-
-    @media (max-width: 850px) {
-      .grid { grid-template-columns: 1fr; }
-    }
-
-    .panel {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      padding: 20px;
+    /* Nav Tab Switcher */
+    .nav-wrapper { display: flex; justify-content: center; width: 100%; }
+    
+    .nav-tabs {
       position: relative;
+      display: inline-flex;
+      align-items: center;
+      background: var(--md-sys-color-surface-container-high);
+      padding: 6px;
+      border-radius: var(--md-radius-full);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      box-shadow: var(--md-shadow-sm);
+      user-select: none;
     }
 
-    .panel-title {
+    .tab-indicator {
       position: absolute;
-      top: -10px;
-      left: 15px;
-      background: var(--bg);
-      padding: 0 8px;
-      color: var(--accent);
-      font-size: 0.75rem;
-      border: 1px solid var(--border-accent);
-      letter-spacing: 1px;
+      top: 6px;
+      bottom: 6px;
+      left: 0;
+      width: 0;
+      background: var(--md-sys-color-primary);
+      border-radius: var(--md-radius-full);
+      transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), width 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1;
+      pointer-events: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     }
 
-    /* Drop Zone */
-    .drop-zone {
-      border: 1px dashed var(--border-accent);
-      padding: 35px 20px;
-      text-align: center;
+    .tab-btn {
+      position: relative;
+      z-index: 2;
+      border: none;
+      background: transparent;
+      padding: 0.65rem 1.6rem;
+      border-radius: var(--md-radius-full);
+      font-weight: 700;
+      font-size: 0.9rem;
       cursor: pointer;
-      background: rgba(0, 240, 255, 0.005);
-      transition: all 0.2s ease;
+      color: var(--md-sys-color-on-surface-variant);
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      transition: color 0.25s ease;
+      white-space: nowrap;
     }
 
+    .tab-btn.active { 
+      color: var(--md-sys-color-secondary); 
+    }
+
+    .tab-btn .material-symbols-outlined {
+      font-size: 1.25rem;
+    }
+
+    /* Viewports */
+    .page-viewport { position: relative; width: 100%; min-height: 480px; }
+    .page {
+      position: absolute; top: 0; left: 0; width: 100%;
+      display: flex; flex-direction: column; gap: 2rem;
+      opacity: 0; pointer-events: none;
+      transform: scale(0.98) translateY(12px);
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+    .page.active {
+      opacity: 1; pointer-events: auto;
+      transform: scale(1) translateY(0); position: relative;
+    }
+
+    .card {
+      background-color: var(--md-sys-color-surface-container);
+      border-radius: var(--md-radius-xl); padding: 2rem;
+      border: 1px solid var(--md-sys-color-outline-variant);
+      box-shadow: var(--md-shadow-md);
+    }
+
+    .drop-zone {
+      border: 2px dashed var(--md-sys-color-outline);
+      border-radius: var(--md-radius-lg); padding: 3.5rem 1.5rem; text-align: center;
+      cursor: pointer; background-color: var(--md-sys-color-surface);
+      display: flex; flex-direction: column; align-items: center; gap: 1rem;
+      transition: all 0.25s ease;
+    }
     .drop-zone:hover, .drop-zone.dragover {
-      background: rgba(0, 240, 255, 0.03);
-      border-color: var(--accent);
+      border-color: var(--md-sys-color-primary);
+      background-color: var(--md-sys-color-primary-container);
+    }
+    .drop-zone .icon-container {
+      width: 64px; height: 64px; border-radius: 50%;
+      background-color: var(--md-sys-color-primary-container); color: var(--md-sys-color-primary);
+      display: flex; align-items: center; justify-content: center;
     }
 
-    .drop-zone p {
-      font-size: 0.8rem;
-      color: var(--text-main);
-    }
+    .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-top: 1rem; }
+    .info-box { background: var(--md-sys-color-surface-container-high); padding: 1.1rem; border-radius: var(--md-radius-md); border: 1px solid var(--md-sys-color-outline-variant); }
+    .info-box label { display: block; font-size: 0.7rem; font-weight: 800; color: var(--md-sys-color-outline); margin-bottom: 0.3rem; text-transform: uppercase; letter-spacing: 0.8px; }
+    .info-box span { font-weight: 600; word-break: break-all; font-size: 0.9rem; }
 
-    input[type="file"] {
-      display: none;
+    .preview-box {
+      margin-top: 1rem; background: var(--md-sys-color-surface-container-high);
+      border-radius: var(--md-radius-md); padding: 1rem;
+      max-height: 300px; overflow: auto; display: flex; justify-content: center; align-items: center;
+      border: 1px solid var(--md-sys-color-outline-variant);
     }
+    .preview-box img, .preview-box video { max-width: 100%; max-height: 240px; border-radius: var(--md-radius-md); }
+    .preview-box pre { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; width: 100%; white-space: pre-wrap; color: var(--md-sys-color-on-surface); }
 
-    /* Info Table */
-    .info-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 15px;
-      font-size: 0.8rem;
-    }
-
-    .info-table th, .info-table td {
-      border: 1px solid var(--border);
-      padding: 8px 10px;
-      text-align: left;
-    }
-
-    .info-table th {
-      background: rgba(10, 25, 47, 0.8);
-      color: var(--accent);
-      width: 30%;
-    }
-
-    .tag {
-      display: inline-block;
-      background: var(--border-accent);
-      color: var(--accent);
-      padding: 2px 6px;
-      font-size: 0.75rem;
-    }
-
-    /* Tools Grid */
-    .tools-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 12px;
-      margin-top: 15px;
+    .tools-grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+      gap: 1.25rem; 
+      transition: all 0.3s ease;
     }
 
     .tool-card {
-      border: 1px solid var(--border);
-      padding: 12px;
-      background: rgba(255, 255, 255, 0.002);
-      text-decoration: none;
-      color: var(--text-main);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      transition: all 0.2s;
+      background-color: var(--md-sys-color-surface-container-high);
+      border-radius: var(--md-radius-lg); padding: 1.5rem;
+      display: flex; flex-direction: column; justify-content: space-between; gap: 1.2rem;
+      text-decoration: none; color: inherit; border: 1px solid var(--md-sys-color-outline-variant);
+      transition: border-color 0.25s ease, transform 0.25s ease, opacity 0.3s ease;
+      animation: toolCardFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
-    .tool-card:hover {
-      border-color: var(--accent);
-      box-shadow: 0 0 10px var(--accent-glow);
+    @keyframes toolCardFadeIn {
+      from { opacity: 0; transform: translateY(12px) scale(0.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    .tool-card .name {
-      font-weight: bold;
-      color: var(--accent);
-      font-size: 0.85rem;
-      margin-bottom: 5px;
+    .tool-card:hover { border-color: var(--md-sys-color-primary); transform: translateY(-3px); }
+    .tool-header { display: flex; align-items: center; gap: 0.75rem; }
+    
+    .tool-badge {
+      font-size: 0.68rem; font-weight: 800; background: var(--md-sys-color-primary-container);
+      color: var(--md-sys-color-primary); padding: 0.25rem 0.6rem; border-radius: var(--md-radius-full);
+      text-transform: uppercase; letter-spacing: 0.5px;
     }
 
-    .tool-card .desc {
-      font-size: 0.75rem;
-      color: var(--text-muted);
+    .fav-btn {
+      border: none; background: transparent; cursor: pointer;
+      color: var(--md-sys-color-outline); display: flex; align-items: center; justify-content: center;
+      transition: color 0.2s ease, transform 0.2s ease;
+    }
+    .fav-btn:hover { transform: scale(1.15); }
+    .fav-btn.active { color: var(--md-sys-color-primary); }
+    .fav-btn.active .material-symbols-outlined {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
     }
 
-    .tool-card .action {
-      margin-top: 10px;
-      font-size: 0.7rem;
-      color: var(--accent);
-      text-align: right;
+    .search-bar {
+      display: flex; align-items: center; gap: 0.75rem;
+      background: var(--md-sys-color-surface-container-high); border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: var(--md-radius-full); padding: 0.65rem 1.25rem; margin-bottom: 1.5rem;
+    }
+    .search-bar input { border: none; background: transparent; outline: none; flex: 1; color: var(--md-sys-color-on-surface); font-size: 0.95rem; font-family: inherit; }
+
+    /* Theme Customizer Palette */
+    .color-swatch-group { display: flex; gap: 0.85rem; flex-wrap: wrap; align-items: center; margin-top: 0.75rem; }
+    
+    .color-picker-dot {
+      position: relative; width: 36px; height: 36px; border-radius: 50%;
+      cursor: pointer; border: 2px solid transparent; transition: transform 0.2s ease, border-color 0.2s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center;
+    }
+    .color-picker-dot:hover { transform: scale(1.12); }
+    .color-picker-dot.active { border-color: var(--md-sys-color-on-surface); }
+    
+    .custom-picker-btn {
+      background: var(--md-sys-color-surface-container-highest);
+      border: 1px dashed var(--md-sys-color-outline);
+    }
+    .custom-picker-btn input[type="color"] {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;
     }
 
-    .status-text {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-top: 10px;
+    .setting-slider-row { display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.85rem; }
+    .setting-slider-row label { font-size: 0.8rem; font-weight: 700; color: var(--md-sys-color-on-surface-variant); display: flex; justify-content: space-between; }
+    input[type="range"] { accent-color: var(--md-sys-color-primary); width: 100%; cursor: pointer; }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(8px);
+      z-index: 200; display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
     }
+    .modal-backdrop.active { opacity: 1; pointer-events: auto; }
+
+    .modal-card {
+      width: 90%; max-width: 500px; max-height: 82vh; overflow-y: auto;
+      transform: scale(0.95); transition: transform 0.25s ease;
+    }
+    .modal-backdrop.active .modal-card { transform: scale(1); }
+
+    /* Buttons */
+    .btn {
+      background-color: var(--md-sys-color-primary); color: var(--md-sys-color-secondary);
+      border: none; padding: 0.65rem 1.4rem; border-radius: var(--md-radius-full);
+      font-weight: 700; font-size: 0.88rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem;
+      transition: opacity 0.2s ease, transform 0.2s ease, background-color 0.25s ease, color 0.25s ease;
+    }
+    .btn:hover { opacity: 0.92; transform: translateY(-1px); }
+    .btn-secondary { background-color: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface); border: 1px solid var(--md-sys-color-outline-variant); }
+    .btn-danger-text { background: transparent; color: #E53935; border: 1px solid #E53935; }
+    .btn-danger-text:hover { background: #E5393510; }
+
+    .icon-btn {
+      width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--md-sys-color-outline-variant);
+      background: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface);
+      display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s ease;
+    }
+    .icon-btn:hover { background: var(--md-sys-color-surface-container-highest); }
+
+    .chip-container { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .chip {
+      padding: 0.45rem 1rem; border-radius: var(--md-radius-full); font-size: 0.82rem; font-weight: 700;
+      background: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface-variant);
+      cursor: pointer; border: 1px solid var(--md-sys-color-outline-variant);
+      display: inline-flex; align-items: center; gap: 0.35rem; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .chip .material-symbols-outlined { font-size: 1rem; }
+    .chip.active { background: var(--md-sys-color-primary); color: var(--md-sys-color-secondary); border-color: transparent; }
   </style>
 </head>
 <body>
 
+  <!-- Header -->
   <header>
-    <h1>> TERMINAL_FILE_OPERATOR.EXE</h1>
-    <div class="subtitle">[SYS_STATUS: ONLINE] // Same Tab Redirect Enabled</div>
+    <div class="brand">
+      <div class="brand-icon">
+        <span class="material-symbols-outlined">folder</span>
+      </div>
+      Files
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" onclick="toggleDarkMode()" title="Toggle Light/Dark Theme">
+        <span class="material-symbols-outlined" id="theme-icon">dark_mode</span>
+      </button>
+      <button class="btn btn-secondary" onclick="openModal()">
+        <span class="material-symbols-outlined">tune</span> Customizer
+      </button>
+    </div>
   </header>
 
-  <div class="grid">
-    <!-- PANEL 1: FILE INSPECTOR -->
-    <div class="panel">
-      <div class="panel-title">[01_FILE_INSPECTOR]</div>
-      
-      <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
-        <p>[CLICK TO BROWSE] OR [DRAG & DROP FILE HERE]</p>
-        <input type="file" id="fileInput">
+  <div class="container">
+    <div class="nav-wrapper">
+      <div class="nav-tabs" id="nav-tabs-track">
+        <div class="tab-indicator" id="tab-indicator"></div>
+        <button class="tab-btn active" id="btn-files" onclick="switchTab('files-page', this)">
+          <span class="material-symbols-outlined">description</span> Files Inspector
+        </button>
+        <button class="tab-btn" id="btn-tools" onclick="switchTab('tools-page', this)">
+          <span class="material-symbols-outlined">build</span> Tools Registry
+        </button>
       </div>
-
-      <div id="inspectorOutput" style="display:none;">
-        <table class="info-table">
-          <tr>
-            <th>PROPERTY</th>
-            <th>VALUE</th>
-          </tr>
-          <tr>
-            <td>File Name</td>
-            <td id="infoName">-</td>
-          </tr>
-          <tr>
-            <td>File Size</td>
-            <td id="infoSize">-</td>
-          </tr>
-          <tr>
-            <td>MIME Type</td>
-            <td id="infoMime">-</td>
-          </tr>
-          <tr>
-            <td>Extension</td>
-            <td><span class="tag" id="infoExt">-</span></td>
-          </tr>
-          <tr>
-            <td>Full Form</td>
-            <td id="infoDesc" style="color: var(--accent); font-weight: bold;">Parsing acronym...</td>
-          </tr>
-        </table>
-      </div>
-      <div class="status-text" id="statusMsg">Waiting for input...</div>
     </div>
 
-    <!-- PANEL 2: DYNAMIC REDIRECT TOOLS -->
-    <div class="panel">
-      <div class="panel-title">[02_TOOLCHAIN_REDIRECTS]</div>
-      <p style="font-size: 0.75rem; color: var(--text-muted);">Loaded tools from <code>tools.json</code>:</p>
+    <div class="page-viewport">
+      <!-- Page 1: Files Inspector -->
+      <main id="files-page" class="page active">
+        <div class="card">
+          <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
+            <div class="icon-container">
+              <span class="material-symbols-outlined" style="font-size: 36px;">cloud_upload</span>
+            </div>
+            <div>
+              <h3 style="font-size: 1.15rem; font-weight: 800;">Drop your file here or click to browse</h3>
+              <p style="color: var(--md-sys-color-outline); font-size: 0.88rem; margin-top: 0.3rem;">Supports documents, images, video, audio, code, and archives</p>
+            </div>
+            <input type="file" id="file-input" style="display: none;">
+          </div>
+        </div>
+
+        <div id="file-info-card" class="card" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h2 style="font-size: 1.2rem; font-weight: 800;">File Analysis</h2>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <button class="btn btn-secondary" id="copy-btn" style="display: none; padding: 0.35rem 0.8rem; font-size: 0.8rem;" onclick="copyFileText()">
+                <span class="material-symbols-outlined" style="font-size: 0.95rem;">content_copy</span> Copy
+              </button>
+              <span id="file-ext-chip" class="tool-badge">Ext</span>
+            </div>
+          </div>
+
+          <div class="preview-box" id="file-preview-box" style="display: none;"></div>
+
+          <div class="info-grid">
+            <div class="info-box"><label>File Name</label><span id="info-name">-</span></div>
+            <div class="info-box"><label>Size</label><span id="info-size">-</span></div>
+            <div class="info-box"><label>MIME Type</label><span id="info-mime">-</span></div>
+            <div class="info-box"><label>Extension Full Form</label><span id="info-fullform" style="color: var(--md-sys-color-primary);">Fetching...</span></div>
+          </div>
+
+          <div style="margin-top: 1.25rem;">
+            <label style="font-size: 0.7rem; font-weight: 800; color: var(--md-sys-color-outline); text-transform: uppercase; letter-spacing: 0.8px;">Cryptographic Hashes</label>
+            <div class="info-grid" style="margin-top: 0.4rem;">
+              <div class="info-box"><label>SHA-256</label><span id="hash-sha256" style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;">Calculating...</span></div>
+              <div class="info-box"><label>SHA-1</label><span id="hash-sha1" style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;">Calculating...</span></div>
+            </div>
+          </div>
+
+          <div style="margin-top: 1.5rem;">
+            <h3 style="font-size: 1rem; font-weight: 800; margin-bottom: 0.75rem; color: var(--md-sys-color-on-surface-variant);">Recommended Tools</h3>
+            <div class="tools-grid" id="recommended-tools"></div>
+          </div>
+        </div>
+      </main>
+
+      <!-- Page 2: Global Tool Registry -->
+      <main id="tools-page" class="page">
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+            <h2 style="font-weight: 800;">Tools Registry</h2>
+            <div class="chip-container" id="tool-filter-chips">
+              <button class="chip active" onclick="filterTools('all', this)"><span class="material-symbols-outlined">grid_view</span> All</button>
+              <button class="chip" onclick="filterTools('fav', this)"><span class="material-symbols-outlined">star</span> Starred</button>
+              <button class="chip" onclick="filterTools('image', this)"><span class="material-symbols-outlined">image</span> Image</button>
+              <button class="chip" onclick="filterTools('pdf', this)"><span class="material-symbols-outlined">picture_as_pdf</span> PDF</button>
+              <button class="chip" onclick="filterTools('audio', this)"><span class="material-symbols-outlined">audiotrack</span> Audio</button>
+              <button class="chip" onclick="filterTools('code', this)"><span class="material-symbols-outlined">code</span> Code</button>
+            </div>
+          </div>
+
+          <div class="search-bar">
+            <span class="material-symbols-outlined" style="color: var(--md-sys-color-outline);">search</span>
+            <input type="text" id="tool-search-input" placeholder="Search tools..." oninput="handleSearch()">
+          </div>
+
+          <div class="tools-grid" id="all-tools-grid"></div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Customizer Modal -->
+  <div class="modal-backdrop" id="modal-backdrop" onclick="closeModalOnBackdrop(event)">
+    <div class="card modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <h3 style="font-weight: 800; font-size: 1.15rem;">Theme Customizer</h3>
+        <button class="icon-btn" style="width: 32px; height: 32px;" onclick="closeModal()">✕</button>
+      </div>
+
+      <!-- Primary Color -->
+      <h4 style="font-size: 0.85rem; font-weight: 700; color: var(--md-sys-color-outline);">PRIMARY COLOR</h4>
+      <div class="color-swatch-group">
+        <div class="color-picker-dot" style="background: #6750A4;" title="Purple" onclick="applyMainColor('#6750A4')"></div>
+        <div class="color-picker-dot" style="background: #EAB308;" title="Yellow" onclick="applyMainColor('#EAB308')"></div>
+        <div class="color-picker-dot" style="background: #006874;" title="Teal" onclick="applyMainColor('#006874')"></div>
+        <div class="color-picker-dot" style="background: #984061;" title="Berry" onclick="applyMainColor('#984061')"></div>
+        <div class="color-picker-dot" style="background: #3B6939;" title="Forest" onclick="applyMainColor('#3B6939')"></div>
+        <div class="color-picker-dot" style="background: #8B5000;" title="Amber" onclick="applyMainColor('#8B5000')"></div>
+        <div class="color-picker-dot custom-picker-btn" title="Choose Custom Primary Color">
+          <input type="color" value="#6750A4" id="custom-color-input" onchange="applyMainColor(this.value)">
+        </div>
+      </div>
+
+      <hr style="margin: 1.25rem 0; border: 0; border-top: 1px solid var(--md-sys-color-outline-variant);">
+
+      <!-- Secondary Color Controls -->
+      <h4 style="font-size: 0.85rem; font-weight: 700; color: var(--md-sys-color-outline);">SECONDARY COLOR</h4>
+      <div class="color-swatch-group">
+        <div class="color-picker-dot" style="background: #FFFFFF; border: 1px solid var(--md-sys-color-outline);" title="White Secondary" onclick="applySecondaryColorPreset('white')"></div>
+        <div class="color-picker-dot" style="background: #000000;" title="Black Secondary" onclick="applySecondaryColorPreset('black')"></div>
+        <div class="color-picker-dot" id="dark-shade-swatch" style="background: #332357;" title="Darker Version of Primary" onclick="applySecondaryColorPreset('darker')"></div>
+        <div class="color-picker-dot" id="light-shade-swatch" style="background: #E8DEF8;" title="Lighter Version of Primary" onclick="applySecondaryColorPreset('lighter')"></div>
+        <div class="color-picker-dot custom-picker-btn" title="Choose Custom Secondary Color">
+          <input type="color" value="#FFFFFF" id="custom-secondary-color-input" onchange="applySecondaryColorPreset('custom', this.value)">
+        </div>
+      </div>
+
+      <hr style="margin: 1.25rem 0; border: 0; border-top: 1px solid var(--md-sys-color-outline-variant);">
+
+      <!-- Sliders -->
+      <h4 style="font-size: 0.85rem; font-weight: 700; color: var(--md-sys-color-outline);">GEOMETRY & SURFACES</h4>
       
-      <div class="tools-grid" id="toolsContainer">
-        <!-- Rendered dynamically -->
+      <div class="setting-slider-row">
+        <label>Corner Radius <span id="radius-val">28px</span></label>
+        <input type="range" id="radius-range" min="8" max="36" value="28" oninput="updateCornerRadius(this.value)">
+      </div>
+
+      <div class="setting-slider-row">
+        <label>Glass Backdrop Blur <span id="blur-val">16px</span></label>
+        <input type="range" id="blur-range" min="0" max="32" value="16" oninput="updateGlassBlur(this.value)">
+      </div>
+
+      <div style="margin-top: 1.25rem;">
+        <label style="font-size: 0.8rem; font-weight: 700; color: var(--md-sys-color-outline);">CUSTOM CSS</label>
+        <textarea id="css-editor" placeholder="/* Custom CSS overrides */" oninput="applyCustomCSS(this.value)" style="width: 100%; height: 90px; margin-top: 0.4rem; border-radius: var(--md-radius-md); padding: 0.65rem; font-family: monospace; font-size: 0.8rem; background: var(--md-sys-color-surface); color: var(--md-sys-color-on-surface); border: 1px solid var(--md-sys-color-outline-variant);"></textarea>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem; margin-top: 1.25rem; justify-content: flex-end; align-items: center;">
+        <button class="btn btn-danger-text" onclick="resetThemeToDefault()">Reset Defaults</button>
       </div>
     </div>
   </div>
 
   <script>
-    let loadedTools = [];
+    let TOOL_DATABASE = [];
+    const DEFAULT_TOOLS = [
+      { id: 'img-conv', name: 'Squoosh Compressor', category: 'image', exts: ['png', 'jpg', 'webp'], type: 'External', url: 'https://squoosh.app', desc: 'Optimize images directly in browser.' },
+      { id: 'pdf-merge', name: 'ILovePDF Suite', category: 'pdf', exts: ['pdf'], type: 'External', url: 'https://www.ilovepdf.com', desc: 'Merge, compress, and convert PDF files.' }
+    ];
 
-    // 1. Load tools configuration from external tools.json
-    async function loadToolsConfiguration() {
-      const container = document.getElementById('toolsContainer');
+    const EXTENSION_FULLNAMES = {
+      'pdf': 'Portable Document Format', 'png': 'Portable Network Graphics',
+      'jpg': 'Joint Photographic Experts Group', 'jpeg': 'Joint Photographic Experts Group',
+      'json': 'JavaScript Object Notation', 'mp3': 'MPEG Audio Layer III',
+      'mp4': 'MPEG-4 Part 14 Video', 'svg': 'Scalable Vector Graphics',
+      'zip': 'Archive', 'txt': 'Plain Text'
+    };
+
+    let activeFilterCategory = 'all';
+    let currentRawContent = '';
+    let starredTools = JSON.parse(localStorage.getItem('starred_tools') || '[]');
+    let currentPrimaryColor = localStorage.getItem('global_theme_primary') || '#6750A4';
+
+    async function loadToolsDatabase() {
       try {
         const response = await fetch('tools.json');
-        if (!response.ok) throw new Error('Could not load tools.json');
-        loadedTools = await response.json();
-        renderTools();
+        if (!response.ok) throw new Error('Local JSON file not found');
+        TOOL_DATABASE = await response.json();
       } catch (err) {
-        container.innerHTML = `<div style="color: #ff5555; font-size: 0.8rem;">[ERROR] Could not load 'tools.json'. Ensure you run this through a local server.</div>`;
+        TOOL_DATABASE = DEFAULT_TOOLS;
+      }
+      renderAllTools();
+    }
+
+    function positionTabIndicator(targetBtn) {
+      const indicator = document.getElementById('tab-indicator');
+      if (!targetBtn || !indicator) return;
+
+      const offsetLeft = targetBtn.offsetLeft;
+      const width = targetBtn.offsetWidth;
+
+      indicator.style.width = `${width}px`;
+      indicator.style.transform = `translateX(${offsetLeft}px)`;
+    }
+
+    function switchTab(pageId, btnEl) {
+      positionTabIndicator(btnEl);
+
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btnEl.classList.add('active');
+
+      document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+    }
+
+    window.addEventListener('resize', () => {
+      const activeBtn = document.querySelector('.tab-btn.active');
+      if (activeBtn) positionTabIndicator(activeBtn);
+    });
+
+    function openModal() { document.getElementById('modal-backdrop').classList.add('active'); }
+    function closeModal() { document.getElementById('modal-backdrop').classList.remove('active'); }
+    function closeModalOnBackdrop(e) { if (e.target.id === 'modal-backdrop') closeModal(); }
+
+    function adjustColorBrightness(hex, percent) {
+      let num = parseInt(hex.replace('#',''), 16),
+          amt = Math.round(2.55 * percent),
+          R = (num >> 16) + amt,
+          G = (num >> 8 & 0x00FF) + amt,
+          B = (num & 0x0000FF) + amt;
+      return '#' + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (G<255?G<1?0:G:255)*0x100 + (B<255?B<1?0:B:255)).toString(16).slice(1);
+    }
+
+    /* Auto-calculate ideal readable secondary color based on primary color luminance */
+    function getContrastColor(hexColor) {
+      const hex = hexColor.replace('#', '');
+      const r = parseInt(hex.substr(0, 2), 16);
+      const g = parseInt(hex.substr(2, 2), 16);
+      const b = parseInt(hex.substr(4, 2), 16);
+      const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+      return (yiq >= 128) ? '#000000' : '#FFFFFF';
+    }
+
+    /* AUTOMATIC PRIMARY & SECONDARY THEME UPDATER */
+    function applyMainColor(hex, save = true) {
+      currentPrimaryColor = hex;
+      document.documentElement.style.setProperty('--md-sys-color-primary', hex);
+      document.documentElement.style.setProperty('--md-sys-color-primary-container', hex + '25');
+      
+      const customInput = document.getElementById('custom-color-input');
+      if (customInput) customInput.value = hex;
+
+      if (save) localStorage.setItem('global_theme_primary', hex);
+
+      // Auto calculate and update secondary color for high contrast readability
+      const autoSecondary = getContrastColor(hex);
+      applySecondaryColorPreset('custom', autoSecondary, save);
+
+      const darkerHex = adjustColorBrightness(hex, -40);
+      const lighterHex = adjustColorBrightness(hex, 45);
+      
+      const darkSwatch = document.getElementById('dark-shade-swatch');
+      const lightSwatch = document.getElementById('light-shade-swatch');
+      
+      if (darkSwatch) darkSwatch.style.background = darkerHex;
+      if (lightSwatch) lightSwatch.style.background = lighterHex;
+    }
+
+    function applySecondaryColorPreset(type, customHex = '', save = true) {
+      let targetColor = '#FFFFFF';
+      
+      if (type === 'white') targetColor = '#FFFFFF';
+      else if (type === 'black') targetColor = '#000000';
+      else if (type === 'darker') targetColor = adjustColorBrightness(currentPrimaryColor, -45);
+      else if (type === 'lighter') targetColor = adjustColorBrightness(currentPrimaryColor, 45);
+      else if (type === 'custom' && customHex) targetColor = customHex;
+
+      document.documentElement.style.setProperty('--md-sys-color-secondary', targetColor);
+
+      const secondaryInput = document.getElementById('custom-secondary-color-input');
+      if (secondaryInput) secondaryInput.value = targetColor;
+
+      if (save) {
+        localStorage.setItem('global_theme_secondary', targetColor);
+        localStorage.setItem('global_theme_secondary_preset', type);
       }
     }
 
-    function renderTools(activeMime = '', activeExt = '') {
-      const container = document.getElementById('toolsContainer');
-      container.innerHTML = '';
-
-      loadedTools.forEach(tool => {
-        const card = document.createElement('a');
-        card.className = 'tool-card';
-        card.href = tool.url;
-        card.target = '_self'; // Opens link in the SAME tab
-
-        const isMatch = tool.categories.includes('all') ||
-                        tool.categories.some(cat => activeMime.includes(cat) || activeExt === cat);
-
-        if (activeExt && !isMatch) {
-          card.style.opacity = '0.25';
-        } else if (activeExt && isMatch) {
-          card.style.borderColor = 'var(--accent)';
-          card.style.boxShadow = '0 0 10px var(--accent-glow)';
-        }
-
-        card.innerHTML = `
-          <div>
-            <div class="name">${tool.name}</div>
-            <div class="desc">${tool.description}</div>
-          </div>
-          <div class="action">REDIRECT -></div>
-        `;
-        container.appendChild(card);
-      });
+    function toggleDarkMode() {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      const target = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', target);
+      document.getElementById('theme-icon').innerText = target === 'dark' ? 'light_mode' : 'dark_mode';
+      localStorage.setItem('global_theme_mode', target);
     }
 
-    // 2. Drag & Drop Handlers
-    const dropZone = document.getElementById('dropZone');
-    const fileInput = document.getElementById('fileInput');
+    function updateCornerRadius(val, save = true) {
+      document.getElementById('radius-val').innerText = `${val}px`;
+      document.documentElement.style.setProperty('--md-radius-xl', `${val}px`);
+      if (save) localStorage.setItem('global_theme_radius', `${val}px`);
+    }
 
-    dropZone.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      dropZone.classList.add('dragover');
+    function updateGlassBlur(val, save = true) {
+      document.getElementById('blur-val').innerText = `${val}px`;
+      document.documentElement.style.setProperty('--glass-blur', `${val}px`);
+      if (save) localStorage.setItem('global_theme_blur', `${val}px`);
+    }
+
+    function applyCustomCSS(cssText, save = true) {
+      document.getElementById('custom-theme-overrides').innerHTML = cssText;
+      if (save) localStorage.setItem('global_theme_custom_css', cssText);
+    }
+
+    function restoreSavedThemeState() {
+      const savedMode = localStorage.getItem('global_theme_mode') || 'light';
+      document.documentElement.setAttribute('data-theme', savedMode);
+      document.getElementById('theme-icon').innerText = savedMode === 'dark' ? 'light_mode' : 'dark_mode';
+
+      const savedPrimary = localStorage.getItem('global_theme_primary') || '#6750A4';
+      currentPrimaryColor = savedPrimary;
+      document.documentElement.style.setProperty('--md-sys-color-primary', savedPrimary);
+      document.documentElement.style.setProperty('--md-sys-color-primary-container', savedPrimary + '25');
+
+      const savedSecondary = localStorage.getItem('global_theme_secondary') || getContrastColor(savedPrimary);
+      document.documentElement.style.setProperty('--md-sys-color-secondary', savedSecondary);
+
+      const savedRadius = parseInt(localStorage.getItem('global_theme_radius') || '28');
+      document.getElementById('radius-range').value = savedRadius;
+      updateCornerRadius(savedRadius, false);
+
+      const savedBlur = parseInt(localStorage.getItem('global_theme_blur') || '16');
+      document.getElementById('blur-range').value = savedBlur;
+      updateGlassBlur(savedBlur, false);
+
+      const savedCSS = localStorage.getItem('global_theme_custom_css') || '';
+      document.getElementById('css-editor').value = savedCSS;
+      applyCustomCSS(savedCSS, false);
+    }
+
+    function resetThemeToDefault() {
+      localStorage.removeItem('global_theme_mode');
+      localStorage.removeItem('global_theme_primary');
+      localStorage.removeItem('global_theme_secondary');
+      localStorage.removeItem('global_theme_secondary_preset');
+      localStorage.removeItem('global_theme_radius');
+      localStorage.removeItem('global_theme_blur');
+      localStorage.removeItem('global_theme_custom_css');
+
+      restoreSavedThemeState();
+    }
+
+    window.addEventListener('storage', (e) => {
+      if (e.key && e.key.startsWith('global_theme_')) {
+        restoreSavedThemeState();
+      }
     });
 
-    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
 
-    dropZone.addEventListener('drop', (e) => {
-      e.preventDefault();
-      dropZone.classList.remove('dragover');
-      if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
-    });
+    ['dragenter', 'dragover'].forEach(e => dropZone.addEventListener(e, (evt) => { evt.preventDefault(); dropZone.classList.add('dragover'); }));
+    ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, (evt) => { evt.preventDefault(); dropZone.classList.remove('dragover'); }));
+    dropZone.addEventListener('drop', (e) => handleFiles(e.dataTransfer.files));
+    fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
 
-    fileInput.addEventListener('change', (e) => {
-      if (e.target.files.length > 0) handleFile(e.target.files[0]);
-    });
+    function handleFiles(files) {
+      if (!files || files.length === 0) return;
+      const file = files[0];
+      const ext = file.name.split('.').pop().toLowerCase();
+
+      document.getElementById('file-info-card').style.display = 'block';
+      document.getElementById('info-name').innerText = file.name;
+      document.getElementById('info-size').innerText = formatBytes(file.size);
+      document.getElementById('info-mime').innerText = file.type || 'Unknown MIME';
+      document.getElementById('file-ext-chip').innerText = `.${ext}`;
+
+      fetchExtensionFullForm(ext);
+      renderRecommendedTools(ext);
+      computeFileHashes(file);
+      generateFilePreview(file, ext);
+    }
+
+    async function computeFileHashes(file) {
+      const buffer = await file.arrayBuffer();
+      const hash256 = await crypto.subtle.digest('SHA-256', buffer);
+      document.getElementById('hash-sha256').innerText = Array.from(new Uint8Array(hash256)).map(b => b.toString(16).padStart(2, '0')).join('');
+
+      const hash1 = await crypto.subtle.digest('SHA-1', buffer);
+      document.getElementById('hash-sha1').innerText = Array.from(new Uint8Array(hash1)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function generateFilePreview(file, ext) {
+      const box = document.getElementById('file-preview-box');
+      const copyBtn = document.getElementById('copy-btn');
+      box.innerHTML = ''; box.style.display = 'none'; copyBtn.style.display = 'none';
+
+      if (file.type.startsWith('image/')) {
+        const img = document.createElement('img'); img.src = URL.createObjectURL(file);
+        box.appendChild(img); box.style.display = 'flex';
+      } else if (file.type.startsWith('video/')) {
+        const video = document.createElement('video'); video.src = URL.createObjectURL(file); video.controls = true;
+        box.appendChild(video); box.style.display = 'flex';
+      } else if (['txt', 'js', 'json', 'html', 'css', 'py'].includes(ext)) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          currentRawContent = e.target.result;
+          const pre = document.createElement('pre');
+          pre.innerText = currentRawContent.slice(0, 1000) + (currentRawContent.length > 1000 ? '\n...[Truncated]' : '');
+          box.appendChild(pre); box.style.display = 'block'; copyBtn.style.display = 'inline-flex';
+        };
+        reader.readAsText(file);
+      }
+    }
+
+    function copyFileText() {
+      navigator.clipboard.writeText(currentRawContent);
+      alert('Content copied!');
+    }
+
+    async function fetchExtensionFullForm(ext) {
+      const fullFormEl = document.getElementById('info-fullform');
+      if (EXTENSION_FULLNAMES[ext]) {
+        fullFormEl.innerText = EXTENSION_FULLNAMES[ext];
+        return;
+      }
+      fullFormEl.innerText = `${ext.toUpperCase()} File`;
+    }
 
     function formatBytes(bytes) {
       if (bytes === 0) return '0 Bytes';
-      const k = 1024;
-      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const k = 1024, sizes = ['Bytes', 'KB', 'MB', 'GB'];
       const i = Math.floor(Math.log(bytes) / Math.log(k));
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 
-    async function handleFile(file) {
-      const ext = file.name.split('.').pop().toLowerCase();
-      
-      document.getElementById('infoName').textContent = file.name;
-      document.getElementById('infoSize').textContent = formatBytes(file.size);
-      document.getElementById('infoMime').textContent = file.type || 'unknown/binary';
-      document.getElementById('infoExt').textContent = '.' + ext;
+    function renderRecommendedTools(ext) {
+      const container = document.getElementById('recommended-tools');
+      container.innerHTML = '';
+      const matched = TOOL_DATABASE.filter(t => t.exts.includes(ext));
 
-      document.getElementById('inspectorOutput').style.display = 'block';
-      document.getElementById('statusMsg').textContent = `[OK] File loaded: ${file.name}`;
-
-      // Query dynamic full-form lookup
-      fetchFullForm(ext, file.type);
-
-      // Refresh tools active highlight
-      renderTools(file.type, ext);
-    }
-
-    // 3. Dynamic Fetching Logic for FULL Extension Expansion Names
-    async function fetchFullForm(ext, mimeType) {
-      const descEl = document.getElementById('infoDesc');
-      descEl.textContent = 'Resolving full form...';
-
-      const cleanExt = ext.trim().toLowerCase();
-
-      // Priority 1: Direct Dictionary Map for common extensions
-      const fullNameMap = {
-        'html': 'HyperText Markup Language',
-        'htm': 'HyperText Markup Language',
-        'ttf': 'TrueType Font',
-        'otf': 'OpenType Font',
-        'webp': 'Web Picture Format',
-        'png': 'Portable Network Graphics',
-        'jpg': 'Joint Photographic Experts Group',
-        'jpeg': 'Joint Photographic Experts Group',
-        'pdf': 'Portable Document Format',
-        'svg': 'Scalable Vector Graphics',
-        'json': 'JavaScript Object Notation',
-        'css': 'Cascading Style Sheets',
-        'js': 'JavaScript Source Code',
-        'gif': 'Graphics Interchange Format',
-        'mp4': 'MPEG-4 Part 14 Video',
-        'mp3': 'MPEG-1 Audio Layer III',
-        'wav': 'Waveform Audio File Format',
-        'zip': 'ZIP Compressed Archive',
-        'txt': 'Text File',
-        'xml': 'Extensible Markup Language',
-        'csv': 'Comma-Separated Values',
-        'doc': 'Microsoft Word Document',
-        'docx': 'Office Open XML Document'
-      };
-
-      if (fullNameMap[cleanExt]) {
-        descEl.textContent = fullNameMap[cleanExt];
+      if (matched.length === 0) {
+        container.innerHTML = `<p style="font-size:0.85rem; color: var(--md-sys-color-outline);">No specialized tools found for .${ext}.</p>`;
         return;
       }
-
-      // Priority 2: Wikipedia Search API (Extract acronym expansion in parenthesis)
-      try {
-        const wikiUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${cleanExt}+file+format&format=json&origin=*`;
-        const wikiRes = await fetch(wikiUrl);
-        
-        if (wikiRes.ok) {
-          const wikiData = await wikiRes.json();
-          if (wikiData.query && wikiData.query.search.length > 0) {
-            let snippet = wikiData.query.search[0].snippet.replace(/<\/?[^>]+(>|$)/g, "");
-
-            // Look for expansion patterns inside parenthetical statements or definition phrases
-            let match = snippet.match(/\(([^)]+)\)/) || 
-                        snippet.match(/(?:stands for|short for|expanded as)\s+([^.,;]+)/i);
-
-            if (match && match[1]) {
-              let candidate = match[1].replace(/file format|format|extension/gi, '').trim();
-              if (candidate.length > 2 && candidate.length < 45) {
-                descEl.textContent = candidate;
-                return;
-              }
-            }
-          }
-        }
-      } catch (e) { /* Fallthrough */ }
-
-      // Priority 3: DuckDuckGo Disambiguation API
-      try {
-        const ddgRes = await fetch(`https://api.duckduckgo.com/?q=${cleanExt}+extension+meaning&format=json&origin=*`);
-        if (ddgRes.ok) {
-          const ddgData = await ddgRes.json();
-          if (ddgData.Heading && ddgData.Heading.length < 40) {
-            let cleanHeading = ddgData.Heading.replace(/file format/i, '').trim();
-            if (cleanHeading.toLowerCase() !== cleanExt) {
-              descEl.textContent = cleanHeading;
-              return;
-            }
-          }
-        }
-      } catch (e) { /* Fallthrough */ }
-
-      // Priority 4: Fallback to formatted MIME category
-      if (mimeType) {
-        descEl.textContent = mimeType.toUpperCase().replace('/', ' / ');
-      } else {
-        descEl.textContent = `.${cleanExt.toUpperCase()} Format`;
-      }
+      matched.forEach(tool => container.appendChild(createToolCard(tool)));
     }
 
-    // Initialize application tools
-    loadToolsConfiguration();
+    function renderAllTools() {
+      const container = document.getElementById('all-tools-grid');
+      const searchQuery = document.getElementById('tool-search-input').value.toLowerCase();
+      
+      container.innerHTML = '';
+
+      let list = TOOL_DATABASE;
+      if (activeFilterCategory === 'fav') list = list.filter(t => starredTools.includes(t.id));
+      else if (activeFilterCategory !== 'all') list = list.filter(t => t.category === activeFilterCategory);
+
+      if (searchQuery) {
+        list = list.filter(t => t.name.toLowerCase().includes(searchQuery) || t.desc.toLowerCase().includes(searchQuery) || t.exts.some(e => e.includes(searchQuery)));
+      }
+
+      if (list.length === 0) {
+        container.innerHTML = '<p style="color: var(--md-sys-color-outline); font-size: 0.9rem;">No matching tools found.</p>';
+        return;
+      }
+      
+      list.forEach((tool, index) => {
+        const card = createToolCard(tool);
+        card.style.animationDelay = `${index * 0.04}s`;
+        container.appendChild(card);
+      });
+    }
+
+    function createToolCard(tool) {
+      const isStarred = starredTools.includes(tool.id);
+      const a = document.createElement('a');
+      a.className = 'tool-card';
+      a.href = tool.url; a.target = '_blank';
+      a.innerHTML = `
+        <div>
+          <div class="tool-header">
+            <h4 style="font-size:0.95rem; font-weight:800; flex:1;">${tool.name}</h4>
+            <button class="fav-btn ${isStarred ? 'active' : ''}" onclick="toggleStar(event, '${tool.id}')">
+              <span class="material-symbols-outlined">star</span>
+            </button>
+            <span class="tool-badge">${tool.type}</span>
+          </div>
+          <p style="font-size: 0.82rem; color: var(--md-sys-color-on-surface-variant); margin-top:0.4rem; line-height:1.4;">${tool.desc}</p>
+        </div>
+        <div style="font-size: 0.78rem; color: var(--md-sys-color-primary); font-weight: 800; display:flex; align-items:center; gap:0.2rem;">Open Tool <span class="material-symbols-outlined" style="font-size:0.85rem;">north_east</span></div>
+      `;
+      return a;
+    }
+
+    function toggleStar(e, toolId) {
+      e.preventDefault(); e.stopPropagation();
+      starredTools = starredTools.includes(toolId) ? starredTools.filter(id => id !== toolId) : [...starredTools, toolId];
+      localStorage.setItem('starred_tools', JSON.stringify(starredTools));
+      renderAllTools();
+    }
+
+    function filterTools(cat, chipEl) {
+      activeFilterCategory = cat;
+      document.querySelectorAll('#tool-filter-chips .chip').forEach(c => c.classList.remove('active'));
+      chipEl.classList.add('active');
+      renderAllTools();
+    }
+
+    function handleSearch() { renderAllTools(); }
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      restoreSavedThemeState();
+      loadToolsDatabase();
+
+      if ('fonts' in document) {
+        await document.fonts.ready;
+      }
+      
+      const activeBtn = document.querySelector('.tab-btn.active');
+      if (activeBtn) {
+        positionTabIndicator(activeBtn);
+      }
+    });
+
+    window.addEventListener('load', () => {
+      const activeBtn = document.querySelector('.tab-btn.active');
+      if (activeBtn) positionTabIndicator(activeBtn);
+    });
   </script>
 </body>
 </html>
